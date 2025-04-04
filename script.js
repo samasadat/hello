@@ -104,6 +104,8 @@ async function init() {
         ${
           task.status === "Completed"
             ? "bg-green-100 text-green-800"
+            : task.status === "In Progress"
+            ? "bg-orange-100 text-orange-800"
             : "bg-blue-100 text-blue-800"
         }">
         ${task.status}
@@ -129,6 +131,31 @@ async function init() {
         ${cat_div}
     </div>
   </div>
+  <div class="flex justify-between">
+  ${
+    task.status !== "Completed"
+      ? `<button 
+                            data-id="${task.id}"
+                            data-status="${
+                              task.status === "In Progress"
+                                ? "Completed"
+                                : "In Progress"
+                            }"
+                            class="status-btn px-3 py-1 rounded ${
+                              task.status === "In Progress"
+                                ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                : "bg-orange-100 text-orange-800 hover:bg-orange-200"
+                            } transition-colors"
+                        >
+                            ${
+                              task.status === "In Progress"
+                                ? "Mark as Complete"
+                                : "Mark as In Progress"
+                            }
+                        </button>`
+      : ""
+  }  
+  <div class="flex-grow"></div>
   <button 
                             data-id="${task.id}" 
                             class="delete-btn text-gray-400 hover:text-red-500 transition-colors"
@@ -137,12 +164,16 @@ async function init() {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
+                        </div>
   </div>
 </div>`;
 
     tasks_div.appendChild(task_div);
     document.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", deleteTaskEvent);
+    });
+    document.querySelectorAll(".status-btn").forEach((btn) => {
+      btn.addEventListener("click", statusTaskEvent);
     });
   });
 }
@@ -152,7 +183,12 @@ async function deleteTaskEvent(e) {
   let response = await deleteTask(task_id);
   window.location.reload();
 }
-
+async function statusTaskEvent(e) {
+  const task_id = parseInt(e.target.closest("button").dataset.id);
+  const task_status = e.target.closest("button").dataset.status;
+  let response = await setTaskStatus(task_id, task_status);
+  window.location.reload();
+}
 async function deleteTask(task_id) {
   const response = await fetch(
     `${localStorage.getItem("API_URL")}/${task_id}`,
@@ -162,6 +198,20 @@ async function deleteTask(task_id) {
   );
   if (!response.ok) {
     console.log(`Delete task failed! status: ${response.status}`);
+  }
+  return await response.json();
+}
+async function setTaskStatus(task_id, task_status) {
+  const response = await fetch(
+    `${localStorage.getItem("API_URL")}/${task_id}`,
+    {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: task_status }),
+    }
+  );
+  if (!response.ok) {
+    console.log(`Set task status failed! status: ${response.status}`);
   }
   return await response.json();
 }
