@@ -1,6 +1,39 @@
 document.addEventListener("DOMContentLoaded", () => {
+  localStorage.setItem(
+    "API_URL",
+    "https://67ee271bc11d5ff4bf7883f7.mockapi.io/tasks"
+  );
+
   init();
 });
+
+async function addNewTaskListener() {
+  document
+    .getElementById("taskForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const newTask = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        priority: document.getElementById("priority").value,
+        status: document.getElementById("status").value,
+        dueDate: document.getElementById("dueDate").value
+          ? Math.floor(
+              new Date(document.getElementById("dueDate").value).getTime() /
+                1000
+            )
+          : null,
+        createdAt: Math.floor(Date.now() / 1000),
+        category: [],
+        name: "samasadat",
+        avatar: "avatar " + Math.floor(Math.random() * 5 + 1),
+      };
+      let response = await addTask(localStorage.getItem("API_URL"), newTask);
+      window.location.reload();
+      this.reset();
+    });
+}
 
 async function getTasks(API_URL) {
   const response = await fetch(API_URL, {
@@ -13,11 +46,22 @@ async function getTasks(API_URL) {
   return await response.json();
 }
 
+async function addTask(API_URL, task) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(task),
+  });
+  if (!response.ok) {
+    console.log(`Add new task failed! status: ${response.status}`);
+  }
+  return await response.json();
+}
+
 async function init() {
-  const API_URL = "https://67ee271bc11d5ff4bf7883f7.mockapi.io/tasks";
+  addNewTaskListener();
   const tasks_div = document.getElementById("tasks");
-  let tasks = await getTasks(API_URL);
-  console.log(tasks);
+  let tasks = await getTasks(localStorage.getItem("API_URL"));
   tasks.forEach((task) => {
     const task_div = document.createElement("div");
     const cat_div = "";
