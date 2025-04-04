@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function addNewTaskListener() {
   document
-    .getElementById("taskForm")
+    .getElementById("task-form")
     .addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -32,6 +32,7 @@ async function addNewTaskListener() {
         avatar: "avatar " + Math.floor(Math.random() * 5 + 1),
       };
       let response = await addTask(localStorage.getItem("API_URL"), newTask);
+      document.getElementById("task-modal").classList.add("hidden");
       await fetchAndListTasks();
       this.reset();
     });
@@ -68,6 +69,17 @@ async function addTask(API_URL, task) {
 }
 
 async function init() {
+  document.getElementById("add-task").addEventListener("click", () => {
+    document.getElementById("task-modal").classList.remove("hidden");
+  });
+  document.getElementById("close-modal").addEventListener("click", () => {
+    document.getElementById("task-modal").classList.add("hidden");
+  });
+  document.getElementById("task-modal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("task-modal")) {
+      document.getElementById("task-modal").classList.add("hidden");
+    }
+  });
   addNewTaskListener();
   localStorage.setItem("filter", "all");
   await fetchAndListTasks();
