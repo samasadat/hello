@@ -15,7 +15,7 @@
     <title>Task Manager</title>
   </head>
   <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8 bg-gray-200">
+    <div class="container mx-auto m-10 px-4 py-8 bg-gray-200 rounded">
       <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
         Task Manager
       </h1>
@@ -124,7 +124,7 @@
           </button>
         </form>
       </div>
-      <div class="mx-auto px-4 py-8 bg-gray-300">
+      <div class="mx-auto px-4 py-8 bg-gray-300 rounded">
         <div class="flex justify-between items-center mb-6">
           <div class="text-gray-600">
             <span id="task-count">0</span> tasks
@@ -162,9 +162,10 @@
             </button>
           </div>
         </div>
+        <hr class="border-t border-gray-400"> 
         <div
           id="tasks"
-          class="bg-gray-400 p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+          class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3"
         ></div>
       </div>
     </div>
